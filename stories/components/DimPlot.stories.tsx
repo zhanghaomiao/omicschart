@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DimPlot } from "./DimPlot";
 
 // Generate sample dimensional reduction data for different cell types
@@ -111,23 +111,6 @@ export const Default: Story = {
   },
 };
 
-export const PCAVisualization: Story = {
-  args: {
-    data: smallerDataset,
-    cellTypeColorMap: smallerColorMap,
-    title: "Principal Component Analysis",
-    chartType: "PCA",
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "PCA visualization with a smaller dataset showing the first two principal components of the data.",
-      },
-    },
-  },
-};
-
 export const TSNEVisualization: Story = {
   args: {
     data: sampleDimPlotData,
@@ -140,22 +123,6 @@ export const TSNEVisualization: Story = {
       description: {
         story:
           "t-SNE visualization showing non-linear dimensionality reduction of high-dimensional single-cell data.",
-      },
-    },
-  },
-};
-
-export const WithoutTitle: Story = {
-  args: {
-    data: smallerDataset,
-    cellTypeColorMap: smallerColorMap,
-    chartType: "UMAP",
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Dimensional reduction plot without a title, showing clean visualization focused on the data points.",
       },
     },
   },

@@ -11,40 +11,40 @@ const ChartContainer = styled.div`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 `;
 
-interface DimPlotData {
-  [cellType: string]: number[][];
-}
 
-interface DimPlotProps {
-  data: DimPlotData;
-  cellTypeColorMap: { [cellType: string]: string };
+interface FeaturePlotProps {
+  data: number[][];
   title?: string;
   chartType?: string;
+  geneName?: string;
+  colorRange?: [string, string];
 }
 
-const createDimPlotOption = (
-  data: DimPlotData,
-  cellTypeColorMap: { [cellType: string]: string },
+const createFeaturePlotOption = (
+  data: number[][],
   title?: string,
-  chartType: string = "UMAP"
+  chartType: string = "UMAP",
+  geneName?: string,
+  colorRange: [string, string] = ["#d3d3d3", "#210cfe"]
 ) => {
-  const cellTypes = Object.keys(data);
-
-  if (cellTypes.length === 0) {
+  if (!data || data.length === 0) {
     return {};
   }
 
-  const series = cellTypes.map((cellType) => ({
-    name: cellType,
-    type: "scatter",
-    data: data[cellType] as number[][],
-    symbolSize: 2,
-    large: true,
-    animation: false,
-    itemStyle: {
-      color: cellTypeColorMap[cellType],
-    },
-  }));
+  // Calculate max expression value for visualMap
+  const maxValue = Math.max(...data.map(point => point[2] || 0));
+
+  const series = [
+    {
+      name: geneName || "Expression",
+      type: "scatter",
+      data: data,
+      symbolSize: 3,
+      large: true,
+      largeThreshold: 2000,
+      animation: false,
+    }
+  ];
 
   const option = {
     title: title
@@ -62,37 +62,42 @@ const createDimPlotOption = (
     tooltip: {
       trigger: "item",
       formatter: (params: any) => {
-        const cellType = params.seriesName;
-        const [x, y] = params.value;
+        const point = data[params.dataIndex];
         return `
-          <div style="font-weight: bold; color: #23255F;">Cell Type: ${cellType}</div>
+          <div style="font-weight: bold; color: #23255F;">${geneName || "Gene"}</div>
           <div style="margin-top: 5px;">
-            <div>${chartType.toUpperCase()}_1: ${x.toFixed(2)}</div>
-            <div>${chartType.toUpperCase()}_2: ${y.toFixed(2)}</div>
+            <div>${chartType.toUpperCase()}_1: ${point[0].toFixed(2)}</div>
+            <div>${chartType.toUpperCase()}_2: ${point[1].toFixed(2)}</div>
+            <div>Expression: ${point[2].toFixed(2)}</div>
           </div>
         `;
       },
     },
-    legend: {
-      data: cellTypes,
-      type: "scroll",
+    visualMap: {
+      type: "continuous",
+      min: 0,
+      max: maxValue,
+      inRange: {
+        color: colorRange,
+      },
       orient: "horizontal",
-      top: title ? 40 : 0,
       left: "center",
+      top: title ? 40 : 10,
       textStyle: {
         color: "#23255F",
         fontSize: 12,
       },
-      itemWidth: 10,
-      itemHeight: 10,
-      itemGap: 20,
-      selectedMode: "multiple",
-      inactiveColor: "#ccc",
+      calculable: true,
+      dimension: 2,
+      seriesIndex: 0,
+      precision: 1,
+      hoverLink: false,
+      show: true,
     },
     grid: {
       left: 80,
       right: 50,
-      top: title ? 90 : 50,
+      top: title ? 90 : 60,
       bottom: 70,
       containLabel: true,
     },
@@ -168,16 +173,17 @@ const createDimPlotOption = (
   return option;
 };
 
-export const DimPlot: React.FC<DimPlotProps> = ({
+export const FeaturePlot: React.FC<FeaturePlotProps> = ({
   data,
-  cellTypeColorMap,
   title,
   chartType = "UMAP",
+  geneName,
+  colorRange = ["#d3d3d3", "#210cfe"],
 }) => {
-  const option = createDimPlotOption(data, cellTypeColorMap, title, chartType);
+  const option = createFeaturePlotOption(data, title, chartType, geneName, colorRange);
 
   return (
-    <ChartContainer >
+    <ChartContainer>
       <ReactECharts
         option={option}
         style={{ width: "100%", height: "100%" }}
@@ -186,4 +192,4 @@ export const DimPlot: React.FC<DimPlotProps> = ({
       />
     </ChartContainer>
   );
-};
+}; 
