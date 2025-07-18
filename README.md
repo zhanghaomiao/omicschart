@@ -17,7 +17,7 @@ This repository contains various chart components optimized for biological data 
 
 The components are documented and demonstrated using Storybook. You can view the live documentation at:
 
-**[View Live Storybook →](https://[your-username].github.io/omicschart/)**
+**[View Live Storybook →](https://zhanghaomiao.github.io/omicschart/)**
 
 *Replace `[your-username]` with your actual GitHub username*
 
@@ -32,7 +32,7 @@ The components are documented and demonstrated using Storybook. You can view the
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/[your-username]/omicschart.git
+git clone https://github.com/zhanghaomiao/omicschart.git
 cd omicschart
 ```
 
